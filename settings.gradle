@@ -1,0 +1,4 @@
+rootProject.name = "gradle-multi-build"
+include 'gui'
+include 'core'
+
