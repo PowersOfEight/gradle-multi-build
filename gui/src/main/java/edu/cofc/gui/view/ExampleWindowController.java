@@ -1,6 +1,6 @@
 package edu.cofc.gui.view;
 
-import edu.cofc.core.serialize.CommaSeparatable;
+import edu.cofc.core.serialize.CommaSeparable;
 import edu.cofc.core.serialize.Example;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -14,7 +14,6 @@ import javafx.util.StringConverter;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.function.UnaryOperator;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ExampleWindowController implements Initializable {
@@ -88,7 +87,7 @@ public class ExampleWindowController implements Initializable {
                 String name = nameField.getText();
                 double data = Double.parseDouble(dataField.getText());
                 String fileName = String.format(("../%s.csv"),name);
-                CommaSeparatable.writeToCSVFile(fileName, new Example(id, name, data));
+                CommaSeparable.writeToCSVFile(fileName, new Example(id, name, data));
 
             } catch (Throwable ex) {
 

@@ -3,7 +3,7 @@ package edu.cofc.core.serialize;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class Example implements Serializable, CommaSeparatable {
+public class Example implements Serializable, CommaSeparable {
 
     private int id;
     private String name;

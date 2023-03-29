@@ -23,8 +23,8 @@ class SerializeExampleCSVTest {
     @Test
     void writeAndReadCSV() throws IOException, ReflectiveOperationException {
         Example example = new Example(1,"example",1.234);
-        CommaSeparatable.writeToCSVFile(fileName,example);
-        Example other = (Example) CommaSeparatable.readObjectFromCSVFile(
+        CommaSeparable.writeToCSVFile(fileName,example);
+        Example other = (Example) CommaSeparable.readObjectFromCSVFile(
                 fileName, Example.class);
         assertNotSame(example, other);
         assertEquals(example, other);
