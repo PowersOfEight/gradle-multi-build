@@ -90,7 +90,9 @@ public class MainClass {
 
     }
 
-    public static void main(String[] args) throws IOException {
+
+
+    public static void main(String[] args) throws IOException, ReflectiveOperationException {
         Scanner input = new Scanner(System.in);
         printMainMenu();
         int selection = validateMenuSelection(MAIN_MENU_OPTIONS.length, input);
@@ -101,7 +103,9 @@ public class MainClass {
                     break;
 
                 case 1:
-                    //  TODO: logic for read from file
+                    System.out.print("Output file name: ");
+                    Example example = (Example) CommaSeparable.readObjectFromCSVFile(input.nextLine(),Example.class);
+                    System.out.printf("The example read from the file is: %s", example.printToCSVRecord());
                     break;
             }
             printMainMenu();
