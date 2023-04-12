@@ -57,10 +57,10 @@ public class Example implements Serializable, CommaSeparable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Example example = (Example) o;
+        Example example = (Example) o;// TODO: Add parentheses around expression
         return id == example.id &&
                 Double.compare(example.data, data) == 0 &&
-                Objects.equals(name, example.name);
+                name.compareTo(((Example) o).getName()) == 0;
     }
 
     @Override
