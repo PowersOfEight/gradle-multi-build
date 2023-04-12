@@ -10,6 +10,10 @@ application {
     mainClassName = javaMainClass
 }
 
+run {
+    standardInput = System.in;
+}
+
 group 'edu.cofc'
 version '1.0-SNAPSHOT'
 repositories {
