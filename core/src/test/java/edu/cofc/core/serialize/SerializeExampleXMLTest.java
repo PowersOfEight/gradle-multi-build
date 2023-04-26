@@ -37,10 +37,8 @@ class SerializeExampleXMLTest {
         Path path = Paths.get(FILE_NAME);
         Example example = new Example(1234, "Abraham", 4.321);
         Example.marshallToXML(example, FILE_NAME);
-//        Example.serializeToXML(example, FILE_NAME);
         Assertions.assertTrue(Files.exists(path));
         Assertions.assertFalse(Files.isDirectory(path));
-//        Example other = Example.deserializeFromXML(FILE_NAME);
         Example other = Example.unmarshallFromXML(FILE_NAME);
         Assertions.assertNotNull(other);
         Assertions.assertNotSame(example, other);

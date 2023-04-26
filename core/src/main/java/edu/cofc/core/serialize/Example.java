@@ -21,7 +21,8 @@ import java.util.Objects;
  *     The tutorial used to create this example can be found
  *     <a href="https://www.vogella.com/tutorials/JAXB/article.html#jaxb_tutorial">here</a>.</br>
  *     Baeldung has another version (without using gradle)
- *     <a href="https://www.baeldung.com/jaxb">available here</a>.
+ *     <a href="https://www.baeldung.com/jaxb">available here</a>.</br>
+ *     <a href="https://eclipse-ee4j.github.io/jaxb-ri/">Jakarta documentation for JAXB</a>
  * </p>
  */
 @XmlRootElement(name = "Example")
@@ -70,12 +71,18 @@ public class Example implements Serializable, CommaSeparable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Example example = (Example) o;// TODO: Add parentheses around expression
-        return id == example.id &&
-                Double.compare(example.data, data) == 0 &&
-                name.compareTo(((Example) o).getName()) == 0;
+        boolean result;
+        if (this == o) {
+            result = true;
+        } else if (o == null || getClass() != o.getClass()) {
+            result = false;
+        } else {
+            Example example = (Example) o;
+            result = ((this.id == example.getId()) &&
+                    (this.name.compareTo(example.getName()) == 0) &&
+                    (Double.compare(example.getData(), this.data) == 0));
+        }
+        return result;
     }
 
     @Override
@@ -96,19 +103,37 @@ public class Example implements Serializable, CommaSeparable {
         this.data = Double.parseDouble(fields[2]);
     }
 
-
+    /**
+     * <p>
+     *    Marshalls <code>Example</code> object to XML file at the provided
+     *    fileName.
+     * </p>
+     * @param example The <code>Example</code> to be marshalled
+     * @param fileName The name of the output file.
+     * @throws JAXBException If JAXB library encounters a problem
+     * @throws IOException If there is a problem opening a file
+     */
 
     public static void marshallToXML(Example example, String fileName)
             throws JAXBException, IOException {
         JAXBContext context = JAXBContext.newInstance(Example.class);
         Marshaller marshaller = context.createMarshaller();
-        //  Creates an indented XML file
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
         OutputStream outputStream = Files.newOutputStream(Paths.get(fileName));
         marshaller.marshal(example, outputStream);
         outputStream.close();
     }
 
+    /**
+     * <p>
+     *     Parses the provided input XML file and returns an <code>Example</code>
+     *     instance taken from the fields of the XML file.
+     * </p>
+     * @param inputFileName The file to parse
+     * @return An <code>Example</code> instance parsed from the provided file
+     * @throws JAXBException If JAXB has difficulty parsing the file
+     * @throws IOException If there is a problem opening or reading from the file
+     */
     public static Example unmarshallFromXML(String inputFileName)
             throws JAXBException, IOException {
         JAXBContext context = JAXBContext.newInstance(Example.class);
