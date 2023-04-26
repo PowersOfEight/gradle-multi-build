@@ -11,11 +11,9 @@ application {
 }
 
 run {
-    standardInput = System.in;
+    standardInput = System.in
 }
 
-group 'edu.cofc'
-version '1.0-SNAPSHOT'
 repositories {
     mavenCentral()
 }

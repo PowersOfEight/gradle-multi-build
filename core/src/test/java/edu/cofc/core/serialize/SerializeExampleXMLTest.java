@@ -4,7 +4,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
+import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -31,15 +31,17 @@ class SerializeExampleXMLTest {
     }
 
     @Test
-    void serializeAndDeserializeXML() throws IOException {
+    void serializeAndDeserializeXML() throws IOException, JAXBException {
         fileExtension =  ".xml";
         final String FILE_NAME = testFileName + fileExtension;
         Path path = Paths.get(FILE_NAME);
         Example example = new Example(1234, "Abraham", 4.321);
-        Example.serializeToXML(example, FILE_NAME);
+        Example.marshallToXML(example, FILE_NAME);
+//        Example.serializeToXML(example, FILE_NAME);
         Assertions.assertTrue(Files.exists(path));
         Assertions.assertFalse(Files.isDirectory(path));
-        Example other = Example.deserializeFromXML(FILE_NAME);
+//        Example other = Example.deserializeFromXML(FILE_NAME);
+        Example other = Example.unmarshallFromXML(FILE_NAME);
         Assertions.assertNotNull(other);
         Assertions.assertNotSame(example, other);
         Assertions.assertEquals(example, other);
