@@ -1,7 +1,8 @@
 package edu.cofc.cli;
 
-import edu.cofc.core.serialize.CommaSeparable;
+
 import edu.cofc.core.serialize.Example;
+import edu.cofc.core.serialize.exception.XMLException;
 
 import java.io.IOException;
 import java.util.Scanner;
@@ -13,6 +14,8 @@ public class MainClass {
             "Load record from file",
             "Exit the program"
     };
+
+
     public static final char BORDER_CHAR = '*';
     public static final int BORDER_LENGTH = 60;
 
@@ -36,6 +39,7 @@ public class MainClass {
             System.out.printf("Please enter your selection (%d..%d): ", 0, numberOfMenuItems - 1);
             selection = input.nextInt();
         }
+        input.nextLine();
         return selection;
     }
 
@@ -74,7 +78,8 @@ public class MainClass {
         return input.nextLine();
     }
 
-    public static void saveUserInputToFile(Scanner input) throws IOException {
+    public static void saveUserInputToFile(Scanner input)
+            throws XMLException, IOException {
         //  Get the Example attributes
         int recordID;
         String recordName;
@@ -86,27 +91,26 @@ public class MainClass {
         recordData = getRecordDataFromInput(input);
         example = new Example(recordID, recordName, recordData);
         outputFileName = getFileNameFromInput(input);
-        CommaSeparable.writeToCSVFile(outputFileName, example);
-
+//        CommaSeparable.writeToCSVFile(outputFileName, example);
+        Example.marshallToXML(example, outputFileName);
     }
 
 
 
-    public static void main(String[] args) throws IOException, ReflectiveOperationException {
+    public static void main(String[] args) throws Exception {
         Scanner input = new Scanner(System.in);
         printMainMenu();
         int selection = validateMenuSelection(MAIN_MENU_OPTIONS.length, input);
         while(selection != MAIN_MENU_OPTIONS.length - 1) {
-            switch(selection) {
-                case 0:
-                    saveUserInputToFile(input);
-                    break;
-
-                case 1:
+            switch (selection) {
+                case 0 -> saveUserInputToFile(input);
+                case 1 -> {
                     System.out.print("Output file name: ");
-                    Example example = (Example) CommaSeparable.readObjectFromCSVFile(input.nextLine(),Example.class);
-                    System.out.printf("The example read from the file is: %s", example.printToCSVRecord());
-                    break;
+//                    Example example = (Example) CommaSeparable.readObjectFromCSVFile(input.nextLine(),Example.class);
+                    Example example = Example.unmarshallFromXML(getFileNameFromInput(input));
+                    System.out.printf("The example read from the file is: %s\n", example.printToCSVRecord());
+                }
+                default -> throw new IllegalArgumentException("Unexpected value for user input");
             }
             printMainMenu();
             selection = validateMenuSelection(MAIN_MENU_OPTIONS.length, input);

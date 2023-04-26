@@ -1,10 +1,10 @@
 package edu.cofc.core.serialize;
 
+import edu.cofc.core.serialize.exception.XMLException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -31,7 +31,7 @@ class SerializeExampleXMLTest {
     }
 
     @Test
-    void serializeAndDeserializeXML() throws IOException, JAXBException {
+    void serializeAndDeserializeXML() throws IOException, XMLException {
         fileExtension =  ".xml";
         final String FILE_NAME = testFileName + fileExtension;
         Path path = Paths.get(FILE_NAME);

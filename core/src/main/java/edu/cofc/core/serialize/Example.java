@@ -1,5 +1,7 @@
 package edu.cofc.core.serialize;
 
+import edu.cofc.core.serialize.exception.XMLException;//    Pass through for JAXBExceptions
+
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
@@ -110,18 +112,22 @@ public class Example implements Serializable, CommaSeparable {
      * </p>
      * @param example The <code>Example</code> to be marshalled
      * @param fileName The name of the output file.
-     * @throws JAXBException If JAXB library encounters a problem
+     * @throws XMLException If JAXB library encounters a problem
      * @throws IOException If there is a problem opening a file
      */
-
     public static void marshallToXML(Example example, String fileName)
-            throws JAXBException, IOException {
-        JAXBContext context = JAXBContext.newInstance(Example.class);
-        Marshaller marshaller = context.createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-        OutputStream outputStream = Files.newOutputStream(Paths.get(fileName));
-        marshaller.marshal(example, outputStream);
-        outputStream.close();
+            throws XMLException, IOException {
+        try {
+            JAXBContext context = JAXBContext.newInstance(Example.class);
+            Marshaller marshaller = context.createMarshaller();
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+            OutputStream outputStream = Files.newOutputStream(Paths.get(fileName));
+            marshaller.marshal(example, outputStream);
+            outputStream.close();
+        } catch (JAXBException ex) {
+            throw new XMLException(ex);
+        }
+
     }
 
     /**
@@ -131,15 +137,19 @@ public class Example implements Serializable, CommaSeparable {
      * </p>
      * @param inputFileName The file to parse
      * @return An <code>Example</code> instance parsed from the provided file
-     * @throws JAXBException If JAXB has difficulty parsing the file
+     * @throws XMLException If JAXB has difficulty parsing the file
      * @throws IOException If there is a problem opening or reading from the file
      */
     public static Example unmarshallFromXML(String inputFileName)
-            throws JAXBException, IOException {
-        JAXBContext context = JAXBContext.newInstance(Example.class);
-        InputStream inputStream = Files.newInputStream(Paths.get(inputFileName));
-        Example example = (Example) context.createUnmarshaller().unmarshal(inputStream);
-        inputStream.close();
-        return example;
+            throws XMLException, IOException {
+        try {
+            JAXBContext context = JAXBContext.newInstance(Example.class);
+            InputStream inputStream = Files.newInputStream(Paths.get(inputFileName));
+            Example example = (Example) context.createUnmarshaller().unmarshal(inputStream);
+            inputStream.close();
+            return example;
+        } catch (JAXBException ex) {
+            throw new XMLException(ex);
+        }
     }
 }
