@@ -1,6 +1,7 @@
 plugins {
     id 'application'
 }
+
 apply plugin : "java"
 ext {
     javaMainClass = "edu.cofc.cli.MainClass"
@@ -10,12 +11,13 @@ application {
     mainClassName = javaMainClass
 }
 
-group 'edu.cofc'
-version '1.0-SNAPSHOT'
+run {
+    standardInput = System.in
+}
+
 repositories {
     mavenCentral()
 }
-
 
 dependencies {
     implementation(project(":core"))
