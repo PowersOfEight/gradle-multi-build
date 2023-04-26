@@ -1,10 +1,9 @@
 package edu.cofc.cli;
 
 
+import edu.cofc.core.serialize.BinarySerializationEngine;
+import edu.cofc.core.serialize.CommaSeparable;
 import edu.cofc.core.serialize.Example;
-import edu.cofc.core.serialize.exception.XMLException;
-
-import java.io.IOException;
 import java.util.Scanner;
 
 public class MainClass {
@@ -15,7 +14,11 @@ public class MainClass {
             "Exit the program"
     };
 
-
+    public static final String[] FILE_TYPE_DESCRIPTIONS = {
+            "Binary",
+            "Comma-separated values",
+            "XML"
+    };
     public static final char BORDER_CHAR = '*';
     public static final int BORDER_LENGTH = 60;
 
@@ -41,6 +44,14 @@ public class MainClass {
         }
         input.nextLine();
         return selection;
+    }
+
+    public static void printFileTypeMenu() {
+        printBorder();
+        for(int i = 0; i < FILE_TYPE_DESCRIPTIONS.length; ++i) {
+            System.out.printf("%s%d%-5s%s\n","(",i,")",FILE_TYPE_DESCRIPTIONS[i]);
+        }
+        printBorder();
     }
 
     public static void printMainMenu(){
@@ -74,25 +85,20 @@ public class MainClass {
     }
 
     public static String getFileNameFromInput(Scanner input) {
-        System.out.print("Input file name: ");
+        System.out.print("Enter the file name: ");
         return input.nextLine();
     }
 
-    public static void saveUserInputToFile(Scanner input)
-            throws XMLException, IOException {
-        //  Get the Example attributes
+
+
+    public static Example getExampleFromUserInput(Scanner input) {
         int recordID;
         String recordName;
         double recordData;
-        String outputFileName;
-        Example example;
         recordID = getRecordIdFromInput(input);
         recordName = getRecordNameFromInput(input);
         recordData = getRecordDataFromInput(input);
-        example = new Example(recordID, recordName, recordData);
-        outputFileName = getFileNameFromInput(input);
-//        CommaSeparable.writeToCSVFile(outputFileName, example);
-        Example.marshallToXML(example, outputFileName);
+        return new Example(recordID, recordName, recordData);
     }
 
 
@@ -102,15 +108,32 @@ public class MainClass {
         printMainMenu();
         int selection = validateMenuSelection(MAIN_MENU_OPTIONS.length, input);
         while(selection != MAIN_MENU_OPTIONS.length - 1) {
+            printFileTypeMenu();
+            int typeSelection = validateMenuSelection(FILE_TYPE_DESCRIPTIONS.length, input);
             switch (selection) {
-                case 0 -> saveUserInputToFile(input);
-                case 1 -> {
-                    System.out.print("Output file name: ");
-//                    Example example = (Example) CommaSeparable.readObjectFromCSVFile(input.nextLine(),Example.class);
-                    Example example = Example.unmarshallFromXML(getFileNameFromInput(input));
-                    System.out.printf("The example read from the file is: %s\n", example.printToCSVRecord());
+                case 0 -> {
+                    Example writableExample = getExampleFromUserInput(input);
+                    switch (typeSelection) {
+                        case 0 -> BinarySerializationEngine.serializeToBinary(writableExample,
+                                    getFileNameFromInput(input));
+                        case 1 -> CommaSeparable.writeToCSVFile(getFileNameFromInput(input),
+                                    writableExample);
+                        case 2 -> Example.marshallToXML(writableExample,
+                                getFileNameFromInput(input));
+                    }
                 }
-                default -> throw new IllegalArgumentException("Unexpected value for user input");
+                case 1 -> {
+                    Example readableExample = new Example();
+                    switch (typeSelection) {
+                        case 0 -> readableExample = (Example) BinarySerializationEngine.
+                                    deserializeFromBinary(getFileNameFromInput(input));
+                        case 1 -> readableExample = (Example) CommaSeparable.
+                                    readObjectFromCSVFile(getFileNameFromInput(input), Example.class);
+                        case 2 -> readableExample = Example.unmarshallFromXML(getFileNameFromInput(input));
+                    }
+                    System.out.printf("Example read from file is: %s \n", readableExample.printToCSVRecord());
+                }
+                default -> throw new IllegalArgumentException("Unexpected value for user input: Main Menu");
             }
             printMainMenu();
             selection = validateMenuSelection(MAIN_MENU_OPTIONS.length, input);
